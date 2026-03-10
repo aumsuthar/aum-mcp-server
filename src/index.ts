@@ -14,6 +14,9 @@ import { registerNotesTools } from "./tools/notes.js";
 import { registerGithubTools } from "./tools/github.js";
 import { registerSpotifyTools } from "./tools/spotify.js";
 import { registerCanvasTools } from "./tools/canvas.js";
+import { registerGmailTools } from "./tools/gmail.js";
+import { registerCalendarTools } from "./tools/calendar.js";
+import { registerNotionTools } from "./tools/notion.js";
 
 const server = new McpServer({
   name: "aum-mcp-server",
@@ -28,6 +31,9 @@ registerNotesTools(server);
 registerGithubTools(server);
 registerSpotifyTools(server);
 registerCanvasTools(server);
+registerGmailTools(server);
+registerCalendarTools(server);
+registerNotionTools(server);
 
 // Start the server
 async function main() {
