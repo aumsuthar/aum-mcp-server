@@ -6,7 +6,7 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { googleFetch } from "./google-oauth.js";
+import { googleFetch, getGoogleAccessToken } from "./google-oauth.js";
 
 const BASE = "https://gmail.googleapis.com/gmail/v1/users/me";
 
@@ -118,6 +118,62 @@ export function registerGmailTools(server: McpServer) {
         };
 
         return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
+      } catch (err: any) {
+        return { content: [{ type: "text" as const, text: `Error: ${err.message}` }], isError: true };
+      }
+    }
+  );
+
+  server.tool(
+    "gmail_send",
+    "Send an email from Aum's Gmail account.",
+    {
+      to: z.string().describe("Recipient email address(es), comma-separated"),
+      subject: z.string().describe("Email subject"),
+      body: z.string().describe("Email body (plain text)"),
+      cc: z.string().optional().describe("CC email address(es), comma-separated"),
+      reply_to_id: z.string().optional().describe("Message ID to reply to (sets In-Reply-To and References headers)"),
+    },
+    async ({ to, subject, body, cc, reply_to_id }) => {
+      try {
+        const lines = [
+          `To: ${to}`,
+          ...(cc ? [`Cc: ${cc}`] : []),
+          `Subject: ${subject}`,
+          "Content-Type: text/plain; charset=utf-8",
+          "MIME-Version: 1.0",
+          ...(reply_to_id ? [`In-Reply-To: ${reply_to_id}`, `References: ${reply_to_id}`] : []),
+          "",
+          body,
+        ];
+        const raw = Buffer.from(lines.join("\r\n"))
+          .toString("base64")
+          .replace(/\+/g, "-")
+          .replace(/\//g, "_")
+          .replace(/=+$/, "");
+
+        const token = await getGoogleAccessToken();
+        const res = await fetch(`${BASE}/messages/send`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ raw }),
+        });
+
+        if (!res.ok) {
+          const err = await res.text();
+          throw new Error(`Gmail API error ${res.status}: ${err.slice(0, 300)}`);
+        }
+
+        const sent = await res.json() as any;
+        return {
+          content: [{
+            type: "text" as const,
+            text: JSON.stringify({ id: sent.id, threadId: sent.threadId, status: "sent" }, null, 2),
+          }],
+        };
       } catch (err: any) {
         return { content: [{ type: "text" as const, text: `Error: ${err.message}` }], isError: true };
       }

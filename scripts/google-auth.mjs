@@ -29,6 +29,7 @@ if (!clientId || !clientSecret) {
 const REDIRECT_URI = "http://localhost:9999/callback";
 const SCOPES = [
   "https://www.googleapis.com/auth/gmail.readonly",
+  "https://www.googleapis.com/auth/gmail.send",
   "https://www.googleapis.com/auth/calendar",
 ].join(" ");
 
