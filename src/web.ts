@@ -298,6 +298,29 @@ function renderHTML(): string {
     }
 
     /* ── Tools ── */
+    .tools-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .tools-section-header .section-label { margin-bottom: 0; }
+    .tools-toggle {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted-fg);
+      padding: 3px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: transparent;
+      cursor: pointer;
+      transition: border-color 120ms, color 120ms;
+    }
+    .tools-toggle:hover { border-color: var(--accent); color: var(--accent); }
+    .tools-collapsible { display: none; }
+    .tools-collapsible.open { display: block; }
     .tools-groups {
       display: flex;
       flex-direction: column;
@@ -652,30 +675,6 @@ function renderHTML(): string {
     </div>
   </section>
 
-  <!-- Tools -->
-  <section>
-    <p class="section-label">tools</p>
-    <div class="tools-groups">
-      ${TOOLS.map(
-        (group) => `
-      <div>
-        <div class="tool-group-label">${group.label}</div>
-        <div class="tools-grid">
-          ${group.tools
-            .map(
-              (t) => `
-          <div class="tool-card">
-            <div class="tool-name">${t.name}</div>
-            <div class="tool-desc">${t.desc}</div>
-          </div>`
-            )
-            .join("")}
-        </div>
-      </div>`
-      ).join("")}
-    </div>
-  </section>
-
   <!-- Integrations -->
   <section>
     <p class="section-label">integrations</p>
@@ -701,6 +700,35 @@ function renderHTML(): string {
           </div>
         </div>
       </div>`).join("")}
+    </div>
+  </section>
+
+  <!-- Tools -->
+  <section>
+    <div class="tools-section-header" onclick="toggleTools()">
+      <p class="section-label">tools</p>
+      <button class="tools-toggle" id="tools-toggle-btn">show ↓</button>
+    </div>
+    <div class="tools-collapsible" id="tools-collapsible">
+      <div class="tools-groups">
+        ${TOOLS.map(
+          (group) => `
+        <div>
+          <div class="tool-group-label">${group.label}</div>
+          <div class="tools-grid">
+            ${group.tools
+              .map(
+                (t) => `
+            <div class="tool-card">
+              <div class="tool-name">${t.name}</div>
+              <div class="tool-desc">${t.desc}</div>
+            </div>`
+              )
+              .join("")}
+          </div>
+        </div>`
+        ).join("")}
+      </div>
     </div>
   </section>
 
@@ -875,6 +903,14 @@ function renderHTML(): string {
 
   function escHtml(str) {
     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // Tools toggle
+  function toggleTools() {
+    const panel = document.getElementById('tools-collapsible');
+    const btn = document.getElementById('tools-toggle-btn');
+    const isOpen = panel.classList.toggle('open');
+    btn.textContent = isOpen ? 'hide ↑' : 'show ↓';
   }
 
   // Init

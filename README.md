@@ -2,9 +2,21 @@
 
 A personal MCP server — unified tool hub for Claude. Gives Claude access to the file system, web requests, shell commands, persistent notes, and live integrations with GitHub, Spotify, and Canvas LMS. Includes a local web dashboard.
 
+## Integrations
+
+| Tool | Description |
+|------|-------------|
+| `github_contributions` | Contribution calendar and stats for the past N days |
+| `github_profile` | Profile info — repos, followers, top starred repos |
+| `spotify_now_playing` | Currently playing track |
+| `spotify_recent` | 10 most recently played tracks |
+| `spotify_top_artists` | Top artists over the past ~6 months |
+| `canvas_courses` | Active OSU courses with current grades and scores |
+
 ## Tools
 
-### Core
+<details>
+<summary>View all tools</summary>
 
 | Tool | Description |
 |------|-------------|
@@ -23,16 +35,7 @@ A personal MCP server — unified tool hub for Claude. Gives Claude access to th
 | `note_list` | List all saved note keys |
 | `note_delete` | Delete a note by key |
 
-### Integrations
-
-| Tool | Description |
-|------|-------------|
-| `github_contributions` | Contribution calendar and stats for the past N days |
-| `github_profile` | Profile info — repos, followers, top starred repos |
-| `spotify_now_playing` | Currently playing track |
-| `spotify_recent` | 10 most recently played tracks |
-| `spotify_top_artists` | Top artists over the past ~6 months |
-| `canvas_courses` | Active OSU courses with current grades and scores |
+</details>
 
 ## Setup
 
