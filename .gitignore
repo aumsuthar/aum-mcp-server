@@ -1,0 +1,15 @@
+node_modules/
+dist/
+*.js.map
+
+# Environment — never commit API keys
+.env
+.env.*
+!.env.example
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
