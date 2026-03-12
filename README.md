@@ -1,6 +1,6 @@
 # aum-mcp-server
 
-A personal MCP server — unified tool hub for Claude. Gives Claude access to the file system, web requests, shell commands, persistent notes, and live integrations with GitHub, Spotify, and Canvas LMS. Includes a local web dashboard.
+A personal MCP server — unified tool hub for Claude. Gives Claude access to the file system, web requests, shell commands, persistent notes, and live integrations with GitHub, Spotify, Canvas LMS, Gmail, Google Calendar, Google Contacts, and Notion. Includes a local web dashboard.
 
 ## Integrations
 
@@ -12,6 +12,22 @@ A personal MCP server — unified tool hub for Claude. Gives Claude access to th
 | `spotify_recent` | 10 most recently played tracks |
 | `spotify_top_artists` | Top artists over the past ~6 months |
 | `canvas_courses` | Active OSU courses with current grades and scores |
+| `gmail_inbox` | List recent Gmail inbox messages |
+| `gmail_search` | Search Gmail by query |
+| `gmail_get_message` | Read a full email message |
+| `gmail_send` | Send an email (auto-looks up contacts by name) |
+| `calendar_list` | List available Google Calendars |
+| `calendar_events` | List upcoming calendar events |
+| `calendar_today` | Get today's events |
+| `calendar_create_event` | Create a new calendar event (auto-looks up attendees by name) |
+| `contacts_search` | Search Google Contacts by name or email — auto-called when a name is mentioned |
+| `contacts_get` | Get full details for a specific contact |
+| `contacts_list` | List all contacts |
+| `notion_search` | Search across all Notion pages and databases |
+| `notion_get_page` | Get a Notion page's content |
+| `notion_create_page` | Create a new Notion page |
+| `notion_append_blocks` | Append blocks to an existing Notion page |
+| `notion_query_database` | Query a Notion database with filters |
 
 ## Tools
 
@@ -52,6 +68,14 @@ cp .env.example .env
 ```
 
 Fill in `.env` with your API keys (see `.env.example` for details on where to generate each one).
+
+For Gmail and Google Calendar, run the OAuth flow after filling in `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`:
+
+```sh
+node --env-file=.env scripts/google-auth.mjs
+```
+
+This will print a `GOOGLE_REFRESH_TOKEN` to add to `.env`. Covers both Gmail and Calendar in one flow.
 
 **3. Build**
 

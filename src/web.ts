@@ -133,6 +133,15 @@ const TOOLS = [
     ],
   },
   {
+    group: "contacts",
+    label: "Google Contacts",
+    tools: [
+      { name: "contacts_search", desc: "Search contacts by name or email — auto-called when a name is mentioned" },
+      { name: "contacts_list", desc: "List contacts sorted by most recently interacted" },
+      { name: "contacts_get", desc: "Get full details of a contact by resource name" },
+    ],
+  },
+  {
     group: "notion",
     label: "Notion",
     tools: [
@@ -141,6 +150,17 @@ const TOOLS = [
       { name: "notion_create_page", desc: "Create a new page under a parent page or database" },
       { name: "notion_append_blocks", desc: "Append text content to an existing page" },
       { name: "notion_query_database", desc: "Query entries from a Notion database" },
+    ],
+  },
+  {
+    group: "imessage",
+    label: "iMessage",
+    tools: [
+      { name: "imessage_search", desc: "Search messages by contact or content" },
+      { name: "imessage_recent", desc: "Get most recent messages across all chats" },
+      { name: "imessage_chat", desc: "Get messages from a specific conversation" },
+      { name: "imessage_contacts", desc: "List all iMessage contacts with last message" },
+      { name: "imessage_send", desc: "Send an iMessage via Messages.app" },
     ],
   },
 ];

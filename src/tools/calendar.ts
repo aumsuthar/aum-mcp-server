@@ -116,7 +116,7 @@ export function registerCalendarTools(server: McpServer) {
 
   server.tool(
     "calendar_create_event",
-    "Create a new event on Aum's Google Calendar.",
+    "Create a new event on Aum's Google Calendar. If attendees are referenced by name, use contacts_search first to look up their email addresses before creating the event.",
     {
       summary: z.string().describe("Event title"),
       start: z.string().describe("Start time as ISO 8601 (e.g. '2025-03-15T14:00:00') or date only ('2025-03-15' for all-day)"),

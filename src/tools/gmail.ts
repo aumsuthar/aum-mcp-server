@@ -126,7 +126,7 @@ export function registerGmailTools(server: McpServer) {
 
   server.tool(
     "gmail_send",
-    "Send an email from Aum's Gmail account.",
+    "Send an email from Aum's Gmail account. If the recipient is specified by name rather than email address, use contacts_search first to find their email — do not ask Aum to provide it.",
     {
       to: z.string().describe("Recipient email address(es), comma-separated"),
       subject: z.string().describe("Email subject"),

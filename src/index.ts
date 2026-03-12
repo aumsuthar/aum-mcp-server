@@ -17,6 +17,8 @@ import { registerCanvasTools } from "./tools/canvas.js";
 import { registerGmailTools } from "./tools/gmail.js";
 import { registerCalendarTools } from "./tools/calendar.js";
 import { registerNotionTools } from "./tools/notion.js";
+import { registerContactsTools } from "./tools/contacts.js";
+import { registerIMessageTools } from "./tools/imessage.js";
 
 const server = new McpServer({
   name: "aum-mcp-server",
@@ -34,6 +36,8 @@ registerCanvasTools(server);
 registerGmailTools(server);
 registerCalendarTools(server);
 registerNotionTools(server);
+registerContactsTools(server);
+registerIMessageTools(server);
 
 // Start the server
 async function main() {
