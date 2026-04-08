@@ -2,7 +2,7 @@
 
 ## Project overview
 
-Personal MCP server that gives Claude a unified set of tools: file system access, web/HTTP requests, shell commands, persistent notes, and live integrations with GitHub, Spotify, and Canvas LMS.
+Personal MCP server that gives Claude a unified set of tools: file system access, web/HTTP requests, shell commands, persistent notes, live integrations with GitHub, Spotify, Canvas LMS, Gmail, Google Calendar, Contacts, Notion, iMessage, Office, OSC — and a local Ollama agentic loop for fully offline generation with tool use.
 
 ## Commands
 
@@ -27,6 +27,7 @@ src/
     github.ts       # github_contributions, github_profile
     spotify.ts      # spotify_now_playing, spotify_recent, spotify_top_artists
     canvas.ts       # canvas_courses
+    ollama.ts       # ollama_models, ollama_chat (local agentic loop)
 ```
 
 ## Environment variables
@@ -41,6 +42,7 @@ Copy `.env.example` → `.env` and fill in keys. The `.env` file is gitignored a
 | `SPOTIFY_REFRESH_TOKEN` | Spotify OAuth refresh token |
 | `SUPABASE_URL` | Supabase project URL (Spotify token cache) |
 | `SUPABASE_KEY` | Supabase anon key |
+| `OLLAMA_HOST` | Ollama base URL (optional, default: `http://localhost:11434`) |
 
 ## MCP configuration
 

@@ -16,16 +16,21 @@ import { registerSpotifyTools } from "./tools/spotify.js";
 import { registerCanvasTools } from "./tools/canvas.js";
 import { registerGmailTools } from "./tools/gmail.js";
 import { registerCalendarTools } from "./tools/calendar.js";
-import { registerNotionTools } from "./tools/notion.js";
 import { registerContactsTools } from "./tools/contacts.js";
 import { registerIMessageTools } from "./tools/imessage.js";
 import { registerOfficeTools } from "./tools/office.js";
 import { registerOscTools } from "./tools/osc.js";
+import { registerOllamaTools } from "./tools/ollama.js";
+import { patchServer } from "./registry.js";
 
 const server = new McpServer({
   name: "aum-mcp-server",
   version: "1.0.0",
 });
+
+// Intercept server.tool() so every registration is captured in the shared
+// registry — lets ollama_chat call any MCP tool by name.
+patchServer(server);
 
 // Register all tool groups
 registerWebTools(server);
@@ -37,11 +42,11 @@ registerSpotifyTools(server);
 registerCanvasTools(server);
 registerGmailTools(server);
 registerCalendarTools(server);
-registerNotionTools(server);
 registerContactsTools(server);
 registerIMessageTools(server);
 registerOfficeTools(server);
 registerOscTools(server);
+registerOllamaTools(server);
 
 // Start the server
 async function main() {
