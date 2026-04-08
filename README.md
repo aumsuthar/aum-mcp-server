@@ -1,40 +1,93 @@
 # aum-mcp-server
 
-A personal MCP server — unified tool hub for Claude. Gives Claude access to the file system, web requests, shell commands, persistent notes, live integrations with GitHub, Spotify, Canvas LMS, Gmail, Google Calendar, Google Contacts, and Notion — and a local Ollama agent loop for fully offline generation with tool use. Includes a local web dashboard.
+A personal MCP server split into four focused servers — each loads only the tools it needs, keeping Claude's context lean.
 
-## Integrations
+| Server | Tools |
+|--------|-------|
+| `aum-developer` | Web/HTTP, file system, shell, GitHub, Spotify, Canvas LMS, Ollama |
+| `aum-notes` | Persistent notes, Word (.docx), PowerPoint (.pptx) |
+| `aum-communication` | Gmail, Google Calendar, Google Contacts, iMessage |
+| `aum-slurm` | SLURM job management via SSH (any HPC cluster) |
 
-| Tool | Description |
-|------|-------------|
-| `github_contributions` | Contribution calendar and stats for the past N days |
-| `github_profile` | Profile info — repos, followers, top starred repos |
-| `spotify_now_playing` | Currently playing track |
-| `spotify_recent` | 10 most recently played tracks |
-| `spotify_top_artists` | Top artists over the past ~6 months |
-| `canvas_courses` | Active OSU courses with current grades and scores |
-| `gmail_inbox` | List recent Gmail inbox messages |
-| `gmail_search` | Search Gmail by query |
-| `gmail_get_message` | Read a full email message |
-| `gmail_send` | Send an email (auto-looks up contacts by name) |
-| `calendar_list` | List available Google Calendars |
-| `calendar_events` | List upcoming calendar events |
-| `calendar_today` | Get today's events |
-| `calendar_create_event` | Create a new calendar event (auto-looks up attendees by name) |
-| `contacts_search` | Search Google Contacts by name or email — auto-called when a name is mentioned |
-| `contacts_get` | Get full details for a specific contact |
-| `contacts_list` | List all contacts |
-| `notion_search` | Search across all Notion pages and databases |
-| `notion_get_page` | Get a Notion page's content |
-| `notion_create_page` | Create a new Notion page |
-| `notion_append_blocks` | Append blocks to an existing Notion page |
-| `notion_query_database` | Query a Notion database with filters |
-| `ollama_models` | List installed Ollama models ranked by tool-use capability |
-| `ollama_chat` | Agentic chat with best local model — keyword-routes to relevant MCP tools, validates calls, safe by default |
+---
 
-## Tools
+## Setup
+
+### 1. Install dependencies
+
+```sh
+npm install
+```
+
+### 2. Configure environment
+
+```sh
+cp .env.example .env
+```
+
+Fill in `.env` with your API keys. Each section in `.env.example` explains where to generate them.
+
+**Google (Gmail + Calendar + Contacts)** requires an OAuth flow — after filling in `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`, run:
+
+```sh
+node --env-file=.env scripts/google-auth.mjs
+```
+
+This prints a `GOOGLE_REFRESH_TOKEN` — paste it into `.env`. One token covers all three Google services.
+
+### 3. Build
+
+```sh
+npm run build
+```
+
+### 4. Register with Claude
+
+Add to `~/.mcp.json` (create it if it doesn't exist). Replace `/path/to/mcp-server` with the absolute path to this repo:
+
+```json
+{
+  "mcpServers": {
+    "aum-developer": {
+      "command": "node",
+      "args": [
+        "--env-file=/path/to/mcp-server/.env",
+        "/path/to/mcp-server/dist/developer.js"
+      ]
+    },
+    "aum-notes": {
+      "command": "node",
+      "args": [
+        "--env-file=/path/to/mcp-server/.env",
+        "/path/to/mcp-server/dist/notes-server.js"
+      ]
+    },
+    "aum-communication": {
+      "command": "node",
+      "args": [
+        "--env-file=/path/to/mcp-server/.env",
+        "/path/to/mcp-server/dist/communication.js"
+      ]
+    },
+    "aum-slurm": {
+      "command": "node",
+      "args": [
+        "--env-file=/path/to/mcp-server/.env",
+        "/path/to/mcp-server/dist/slurm.js"
+      ]
+    }
+  }
+}
+```
+
+You can register only the servers you need — each one is independent.
+
+---
+
+## Tool reference
 
 <details>
-<summary>View all tools</summary>
+<summary>aum-developer</summary>
 
 | Tool | Description |
 |------|-------------|
@@ -48,60 +101,72 @@ A personal MCP server — unified tool hub for Claude. Gives Claude access to th
 | `current_datetime` | Current date/time in any IANA timezone |
 | `run_command` | Execute shell commands |
 | `get_env` | Read environment variables |
+| `github_contributions` | Contribution calendar and stats for the past N days |
+| `github_profile` | Profile info — repos, followers, top starred repos |
+| `spotify_now_playing` | Currently playing track |
+| `spotify_recent` | 10 most recently played tracks |
+| `spotify_top_artists` | Top artists over the past ~6 months |
+| `canvas_courses` | Active courses with current grades and scores |
+| `ollama_models` | List installed Ollama models ranked by tool-use capability |
+| `ollama_chat` | Agentic chat with best local model — routes to relevant tools automatically |
+
+</details>
+
+<details>
+<summary>aum-notes</summary>
+
+| Tool | Description |
+|------|-------------|
 | `note_set` | Save a persistent note by key |
 | `note_get` | Retrieve a note by key |
 | `note_list` | List all saved note keys |
 | `note_delete` | Delete a note by key |
+| `word_read` | Extract text from a .docx file |
+| `word_create` | Create a .docx file from headings, paragraphs, and bullets |
+| `ppt_read` | Extract slide text from a .pptx file |
+| `ppt_create` | Create a .pptx file from a list of slides |
 
 </details>
 
-## Setup
+<details>
+<summary>aum-communication</summary>
 
-**1. Install dependencies**
+| Tool | Description |
+|------|-------------|
+| `gmail_inbox` | List recent Gmail inbox messages |
+| `gmail_search` | Search Gmail by query |
+| `gmail_get_message` | Read a full email message |
+| `gmail_send` | Send an email |
+| `calendar_list` | List available Google Calendars |
+| `calendar_events` | List upcoming calendar events |
+| `calendar_today` | Get today's events |
+| `calendar_create_event` | Create a new calendar event |
+| `contacts_search` | Search Google Contacts by name or email |
+| `contacts_get` | Get full details for a specific contact |
+| `contacts_list` | List all contacts |
+| `imessage_search` | Search messages by contact or content |
+| `imessage_recent` | Get most recent messages across all chats |
+| `imessage_chat` | Get messages from a specific conversation |
+| `imessage_contacts` | List all iMessage contacts with last message |
+| `imessage_send` | Send an iMessage via Messages.app |
 
-```sh
-npm install
-```
+</details>
 
-**2. Configure environment**
+<details>
+<summary>aum-slurm</summary>
 
-```sh
-cp .env.example .env
-```
+| Tool | Description |
+|------|-------------|
+| `slurm_run` | Run a shell command on the HPC cluster via SSH |
+| `slurm_jobs` | List SLURM jobs in the queue |
+| `slurm_files` | List files in a remote directory |
+| `slurm_read_file` | Read a file from the HPC cluster |
+| `slurm_submit_job` | Submit a SLURM batch job script |
+| `slurm_storage` | Check disk quota and storage usage |
 
-Fill in `.env` with your API keys (see `.env.example` for details on where to generate each one).
+</details>
 
-For Gmail and Google Calendar, run the OAuth flow after filling in `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`:
-
-```sh
-node --env-file=.env scripts/google-auth.mjs
-```
-
-This will print a `GOOGLE_REFRESH_TOKEN` to add to `.env`. Covers both Gmail and Calendar in one flow.
-
-**3. Build**
-
-```sh
-npm run build
-```
-
-**4. Register with Claude**
-
-Add to `~/.mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "aum-mcp": {
-      "command": "node",
-      "args": [
-        "--env-file=/path/to/mcp-server/.env",
-        "/path/to/mcp-server/dist/index.js"
-      ]
-    }
-  }
-}
-```
+---
 
 ## Ollama (local LLM)
 
@@ -115,82 +180,59 @@ ollama pull llama3.2    # solid alternative
 ollama serve            # start if not running as a service
 ```
 
-### How tool routing works
+`ollama_chat` automatically selects a focused subset of tools based on keywords in your prompt. Destructive tools (`write_file`, `run_command`, `gmail_send`, etc.) are never auto-routed — pass them explicitly via the `tools` parameter.
 
-Rather than dumping all 50+ MCP tools into every request, `ollama_chat` automatically selects a focused subset (up to 10) based on keywords in your prompt:
-
-| Prompt contains | Tools exposed |
-|-----------------|---------------|
-| "osc", "hpc", "cluster", "slurm" | `osc_files`, `osc_jobs`, `osc_read_file`, `osc_storage` |
-| "email", "gmail", "inbox" | `gmail_inbox`, `gmail_search`, `gmail_get_message` |
-| "calendar", "schedule", "meeting" | `calendar_today`, `calendar_events`, `calendar_list` |
-| "notion" | `notion_search`, `notion_get_page`, `notion_query_database` |
-| "spotify", "music" | `spotify_now_playing`, `spotify_recent` |
-| "github", "git" | `github_profile`, `github_contributions` |
-| "file", "directory", "folder" | `read_file`, `list_directory` |
-| no keyword match | `read_file`, `list_directory`, `fetch_url`, `system_info`, `current_datetime`, `note_get`, `note_list` |
-
-### Dangerous tools require explicit opt-in
-
-The following tools are **never** included in auto-routed sets. Pass them explicitly via the `tools` param:
-
-`write_file` · `run_command` · `gmail_send` · `imessage_send` · `calendar_create_event` · `note_set` · `note_delete` · `word_create` · `ppt_create` · `osc_run` · `osc_submit_job`
-
-### Parameters
-
-| Param | Default | Description |
-|-------|---------|-------------|
-| `prompt` | — | Task or question |
-| `model` | auto | Override model name (e.g. `llama3.3`) |
-| `system` | built-in | Override system prompt |
-| `tools` | auto-routed | Explicit tool whitelist, e.g. `["osc_run","osc_jobs"]` |
-| `use_tools` | `true` | Set `false` for plain generation |
-| `max_iterations` | `3` | Max tool-call rounds |
-
-### Examples
-
-```
-# Auto-routes to osc_* tools
-ollama_chat(prompt="List my files in /fs/ess/PAS2136")
-
-# Explicit whitelist — enables dangerous tools
-ollama_chat(prompt="Submit this SLURM script", tools=["osc_submit_job","osc_run"])
-
-# Plain generation, no tools
-ollama_chat(prompt="Explain SLURM job arrays", use_tools=false)
-
-# Force a specific model for a complex multi-step task
-ollama_chat(prompt="...", model="llama3.3", max_iterations=5)
-```
-
-### Remote Ollama
-
-```sh
-# .env
-OLLAMA_HOST=http://my-server:11434
-```
-
-Model auto-selection ranking: qwen3 > qwen2.5 > llama3.3 > llama3.2 > llama3.1 > mistral-nemo > …
+---
 
 ## Dashboard
 
-A local web UI runs at `http://localhost:4242` with server status, all registered tools, API integration cards, and a notes viewer/editor.
+A local web UI runs at `http://localhost:4242` with server status, registered tools, API integration cards, and a notes viewer/editor.
 
 ```sh
 npm run web
 ```
 
+---
+
 ## Development
 
 ```sh
-npm run dev    # run with tsx (no build needed, .env auto-loaded)
-npm run build  # compile to dist/
-npm run web    # local dashboard
+npm run build                # compile all servers to dist/
+npm run dev:developer        # run developer server with tsx
+npm run dev:notes            # run notes server with tsx
+npm run dev:communication    # run communication server with tsx
+npm run dev:slurm            # run slurm server with tsx
+npm run web                  # local dashboard
 ```
 
-## Adding your own tools
+Always run `npm run build` after making changes before restarting Claude.
 
-Create a file in `src/tools/`, export a `registerXTools(server)` function, import it in `src/index.ts`, and add it to the `TOOLS` array in `src/web.ts`. See `CLAUDE.md` for a full example.
+---
+
+## Adding a new tool
+
+1. Create `src/tools/mytool.ts`:
+
+```ts
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { z } from "zod";
+
+export function registerMyTools(server: McpServer) {
+  server.tool("my_tool", "What it does", {
+    param: z.string().describe("A parameter"),
+  }, async ({ param }) => {
+    return { content: [{ type: "text" as const, text: `result` }] };
+  });
+}
+```
+
+2. Import and call in the relevant entry point (`src/developer.ts`, `src/notes-server.ts`, etc.).
+
+3. Add to the `TOOLS` array in `src/web.ts` for the dashboard.
+
+4. Run `npm run build`.
+
+---
 
 ## Notes storage
 

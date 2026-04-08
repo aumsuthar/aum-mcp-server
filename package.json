@@ -4,7 +4,6 @@
   "description": "Aum's personal MCP server — a unified API hub for Claude",
   "main": "dist/index.js",
   "bin": {
-    "aum-mcp": "./dist/index.js",
     "aum-developer": "./dist/developer.js",
     "aum-notes": "./dist/notes-server.js",
     "aum-communication": "./dist/communication.js",
