@@ -113,8 +113,8 @@ const TOOLS = [
     ],
   },
   {
-    group: "spotify",
-    label: "Spotify",
+    group: "personal",
+    label: "Personal",
     tools: [
       { name: "spotify_now_playing", desc: "Currently playing track" },
       { name: "spotify_recent", desc: "10 most recently played tracks" },
@@ -123,9 +123,9 @@ const TOOLS = [
   },
   {
     group: "canvas",
-    label: "Canvas",
+    label: "Canvas LMS",
     tools: [
-      { name: "canvas_courses", desc: "Active OSU courses with current grades and scores" },
+      { name: "canvas_courses", desc: "Active courses with current grades and scores" },
     ],
   },
   {

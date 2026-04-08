@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * aum-developer — web, files, utility, GitHub, Ollama, Canvas, Spotify
+ * aum-developer — web, files, utility, GitHub, Ollama
  */
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -10,8 +10,6 @@ import { registerWebTools } from "./tools/web.js";
 import { registerFileTools } from "./tools/files.js";
 import { registerUtilityTools } from "./tools/utility.js";
 import { registerGithubTools } from "./tools/github.js";
-import { registerSpotifyTools } from "./tools/spotify.js";
-import { registerCanvasTools } from "./tools/canvas.js";
 import { registerOllamaTools } from "./tools/ollama.js";
 import { patchServer } from "./registry.js";
 
@@ -22,8 +20,6 @@ registerWebTools(server);
 registerFileTools(server);
 registerUtilityTools(server);
 registerGithubTools(server);
-registerSpotifyTools(server);
-registerCanvasTools(server);
 registerOllamaTools(server);
 
 async function main() {

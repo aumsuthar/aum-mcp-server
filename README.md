@@ -1,12 +1,14 @@
 # aum-mcp-server
 
-A personal MCP server split into four focused servers — each loads only the tools it needs, keeping Claude's context lean.
+A personal MCP server split into focused servers — each loads only the tools it needs, keeping Claude's context lean.
 
 | Server | Tools |
 |--------|-------|
-| `aum-developer` | Web/HTTP, file system, shell, GitHub, Spotify, Canvas LMS, Ollama |
+| `aum-developer` | Web/HTTP, file system, shell, GitHub, Ollama |
 | `aum-notes` | Persistent notes, Word (.docx), PowerPoint (.pptx) |
 | `aum-communication` | Gmail, Google Calendar, Google Contacts, iMessage |
+| `aum-canvas` | Canvas LMS — courses, grades |
+| `aum-personal` | Spotify |
 | `aum-slurm` | SLURM job management via SSH (any HPC cluster) |
 
 ---
@@ -69,6 +71,20 @@ Add to `~/.mcp.json` (create it if it doesn't exist). Replace `/path/to/mcp-serv
         "/path/to/mcp-server/dist/communication.js"
       ]
     },
+    "aum-canvas": {
+      "command": "node",
+      "args": [
+        "--env-file=/path/to/mcp-server/.env",
+        "/path/to/mcp-server/dist/canvas-server.js"
+      ]
+    },
+    "aum-personal": {
+      "command": "node",
+      "args": [
+        "--env-file=/path/to/mcp-server/.env",
+        "/path/to/mcp-server/dist/personal.js"
+      ]
+    },
     "aum-slurm": {
       "command": "node",
       "args": [
@@ -103,10 +119,6 @@ You can register only the servers you need — each one is independent.
 | `get_env` | Read environment variables |
 | `github_contributions` | Contribution calendar and stats for the past N days |
 | `github_profile` | Profile info — repos, followers, top starred repos |
-| `spotify_now_playing` | Currently playing track |
-| `spotify_recent` | 10 most recently played tracks |
-| `spotify_top_artists` | Top artists over the past ~6 months |
-| `canvas_courses` | Active courses with current grades and scores |
 | `ollama_models` | List installed Ollama models ranked by tool-use capability |
 | `ollama_chat` | Agentic chat with best local model — routes to relevant tools automatically |
 
@@ -149,6 +161,26 @@ You can register only the servers you need — each one is independent.
 | `imessage_chat` | Get messages from a specific conversation |
 | `imessage_contacts` | List all iMessage contacts with last message |
 | `imessage_send` | Send an iMessage via Messages.app |
+
+</details>
+
+<details>
+<summary>aum-canvas</summary>
+
+| Tool | Description |
+|------|-------------|
+| `canvas_courses` | Active courses with current grades and scores |
+
+</details>
+
+<details>
+<summary>aum-personal</summary>
+
+| Tool | Description |
+|------|-------------|
+| `spotify_now_playing` | Currently playing track |
+| `spotify_recent` | 10 most recently played tracks |
+| `spotify_top_artists` | Top artists over the past ~6 months |
 
 </details>
 
