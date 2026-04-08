@@ -89,6 +89,17 @@ const TOOLS = [
     ],
   },
   {
+    group: "obsidian",
+    label: "Obsidian",
+    tools: [
+      { name: "obsidian_read", desc: "Read a note from the vault by path" },
+      { name: "obsidian_write", desc: "Create or overwrite a note, auto-syncs to git" },
+      { name: "obsidian_append", desc: "Append content to a note, auto-syncs to git" },
+      { name: "obsidian_list", desc: "List all notes in the vault or a subdirectory" },
+      { name: "obsidian_search", desc: "Search all notes for a text string" },
+    ],
+  },
+  {
     group: "github",
     label: "GitHub",
     tools: [
