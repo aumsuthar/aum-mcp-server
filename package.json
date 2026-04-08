@@ -4,12 +4,20 @@
   "description": "Aum's personal MCP server — a unified API hub for Claude",
   "main": "dist/index.js",
   "bin": {
-    "aum-mcp": "./dist/index.js"
+    "aum-mcp": "./dist/index.js",
+    "aum-developer": "./dist/developer.js",
+    "aum-notes": "./dist/notes-server.js",
+    "aum-communication": "./dist/communication.js",
+    "aum-slurm": "./dist/slurm.js"
   },
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "tsx --env-file=.env src/index.ts",
+    "dev:developer": "tsx --env-file=.env src/developer.ts",
+    "dev:notes": "tsx --env-file=.env src/notes-server.ts",
+    "dev:communication": "tsx --env-file=.env src/communication.ts",
+    "dev:slurm": "tsx --env-file=.env src/slurm.ts",
     "web": "tsx --env-file=.env src/web.ts"
   },
   "keywords": [

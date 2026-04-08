@@ -1,5 +1,6 @@
 /**
- * Ohio Supercomputer Center (OSC) tools — SSH access to Owens/Pitzer clusters.
+ * SLURM HPC cluster tools — SSH access to any SLURM-based cluster.
+ * Env vars: SLURM_HOST, SLURM_USERNAME, SLURM_PASSWORD
  */
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -8,12 +9,12 @@ import { Client } from "ssh2";
 
 function sshExec(command: string, timeoutMs = 30000): Promise<string> {
   return new Promise((resolve, reject) => {
-    const host = process.env.OSC_HOST ?? "owens.osc.edu";
-    const username = process.env.OSC_USERNAME;
-    const password = process.env.OSC_PASSWORD;
+    const host = process.env.SLURM_HOST ?? process.env.OSC_HOST;
+    const username = process.env.SLURM_USERNAME ?? process.env.OSC_USERNAME;
+    const password = process.env.SLURM_PASSWORD ?? process.env.OSC_PASSWORD;
 
-    if (!username || !password) {
-      return reject(new Error("OSC_USERNAME or OSC_PASSWORD not set in .env"));
+    if (!host || !username || !password) {
+      return reject(new Error("SLURM_HOST, SLURM_USERNAME, and SLURM_PASSWORD must be set in .env"));
     }
 
     const conn = new Client();
@@ -51,12 +52,12 @@ function sshExec(command: string, timeoutMs = 30000): Promise<string> {
   });
 }
 
-export function registerOscTools(server: McpServer) {
+export function registerSlurmTools(server: McpServer) {
   server.tool(
-    "osc_run",
-    "Run a shell command on the Ohio Supercomputer Center cluster (Owens by default) via SSH.",
+    "slurm_run",
+    "Run a shell command on the HPC cluster via SSH.",
     {
-      command: z.string().describe("Shell command to execute on OSC"),
+      command: z.string().describe("Shell command to execute on the cluster"),
       timeout: z.number().default(30000).describe("Timeout in milliseconds (default 30s)"),
     },
     async ({ command, timeout }) => {
@@ -70,13 +71,13 @@ export function registerOscTools(server: McpServer) {
   );
 
   server.tool(
-    "osc_jobs",
-    "List current SLURM jobs on OSC for Aum's account (runs squeue).",
+    "slurm_jobs",
+    "List current SLURM jobs in the queue (runs squeue).",
     {
-      all: z.boolean().default(false).describe("If true, show all jobs on the cluster, not just Aum's"),
+      all: z.boolean().default(false).describe("If true, show all jobs on the cluster, not just the user's"),
     },
     async ({ all }) => {
-      const username = process.env.OSC_USERNAME ?? "";
+      const username = process.env.SLURM_USERNAME ?? process.env.OSC_USERNAME ?? "";
       const cmd = all
         ? "squeue --format='%.18i %.9P %.30j %.8u %.8T %.10M %.6D %R'"
         : `squeue -u ${username} --format='%.18i %.9P %.30j %.8u %.8T %.10M %.6D %R'`;
@@ -90,8 +91,8 @@ export function registerOscTools(server: McpServer) {
   );
 
   server.tool(
-    "osc_files",
-    "List files in a directory on the OSC cluster.",
+    "slurm_files",
+    "List files in a directory on the HPC cluster.",
     {
       path: z.string().default("$HOME").describe("Remote path to list (default: home directory)"),
     },
@@ -106,8 +107,8 @@ export function registerOscTools(server: McpServer) {
   );
 
   server.tool(
-    "osc_read_file",
-    "Read the contents of a file on the OSC cluster.",
+    "slurm_read_file",
+    "Read the contents of a file on the HPC cluster.",
     {
       path: z.string().describe("Remote path to the file"),
     },
@@ -122,8 +123,8 @@ export function registerOscTools(server: McpServer) {
   );
 
   server.tool(
-    "osc_submit_job",
-    "Submit a SLURM batch job on OSC. Writes the script to a temp file then calls sbatch.",
+    "slurm_submit_job",
+    "Submit a SLURM batch job. Writes the script to a temp file then calls sbatch.",
     {
       script: z.string().describe("Full contents of the SLURM batch script (including #!/bin/bash and #SBATCH directives)"),
       name: z.string().default("job").describe("Job script filename (without extension)"),
@@ -131,7 +132,6 @@ export function registerOscTools(server: McpServer) {
     async ({ script, name }) => {
       try {
         const remote_path = `/tmp/${name}_${Date.now()}.sh`;
-        // Write script then submit
         const escaped = script.replace(/'/g, `'\\''`);
         const output = await sshExec(
           `printf '%s' '${escaped}' > ${remote_path} && chmod +x ${remote_path} && sbatch ${remote_path}`,
@@ -145,8 +145,8 @@ export function registerOscTools(server: McpServer) {
   );
 
   server.tool(
-    "osc_storage",
-    "Check OSC storage quota and disk usage for home and scratch directories.",
+    "slurm_storage",
+    "Check storage quota and disk usage on the HPC cluster.",
     {},
     async () => {
       try {
