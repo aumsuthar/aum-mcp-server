@@ -55,7 +55,7 @@ function sshExec(command: string, timeoutMs = 30000): Promise<string> {
 export function registerSlurmTools(server: McpServer) {
   server.tool(
     "slurm_run",
-    "Run a shell command on the HPC cluster via SSH.",
+    "Run a shell command on the HPC cluster via SSH. IMPORTANT: Never run sbatch or any job submission command without explicit user permission in the current message.",
     {
       command: z.string().describe("Shell command to execute on the cluster"),
       timeout: z.number().default(30000).describe("Timeout in milliseconds (default 30s)"),
@@ -124,7 +124,7 @@ export function registerSlurmTools(server: McpServer) {
 
   server.tool(
     "slurm_submit_job",
-    "Submit a SLURM batch job. Writes the script to a temp file then calls sbatch.",
+    "Submit a SLURM batch job. Writes the script to a temp file then calls sbatch. IMPORTANT: Never submit a job without explicit user permission in the current message. Always show the script and ask for confirmation before submitting.",
     {
       script: z.string().describe("Full contents of the SLURM batch script (including #!/bin/bash and #SBATCH directives)"),
       name: z.string().default("job").describe("Job script filename (without extension)"),
